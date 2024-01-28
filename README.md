@@ -9,5 +9,5 @@ This algo aim to take in input any file types, read its raw binary data and gene
 **TODO** :
 
 - [ ] Tranfer draft doc to README
-- [ ] fix write ppm function
+- [x] fix write ppm function
 - [ ] add tests
