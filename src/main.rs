@@ -11,14 +11,15 @@ fn main() {
 
     let bytes = fs::read(file_path).expect("Failed to read file");
 
-    let mut map: Vec<u8> = vec![0; WIDTH * HEIGHT];
+    let mut map: Vec<Vec<u8>> = vec![vec![0; WIDTH]; HEIGHT];
 
     for window in bytes.windows(2) {
-        let curr: usize = (window[0] as usize) * WIDTH + (window[1] as usize);
-        if map[curr] == 255 {
+        let x = window[0] as usize;
+        let y = window[1] as usize;
+        if map[y][x] == 255 {
             continue;
         }
-        map[curr] += 1;
+        map[y][x] += 1;
     }
 
     let mut file: fs::File = fs::File::create(out_path).expect("Failed to create file");
@@ -27,10 +28,12 @@ fn main() {
 
     let mut temp: Vec<u8> = Vec::with_capacity(WIDTH * HEIGHT * 3);
 
-    map.iter().for_each(|v| {
-        temp.push(*v);
-        temp.push(*v);
-        temp.push(*v)
+    map.iter().for_each(|row| {
+        row.iter().for_each(|v| {
+            temp.push(*v);
+            temp.push(*v);
+            temp.push(*v);
+        })
     });
 
     let _ = file.write_all(&temp);
