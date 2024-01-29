@@ -1,4 +1,6 @@
 /target
 /data
+/inputs
+/outputs
 
 .DS_Store
