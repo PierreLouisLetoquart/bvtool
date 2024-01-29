@@ -19,17 +19,17 @@ git clone git@github.com:PierreLouisLetoquart/bvtool.git
 cd bvtool
 ```
 
-Run the project, it needs a file path as argument for input and one for output :
+Run the project, it needs a file path as argument (the input file) :
 
 ```bash
-cargo run -- target/debug/bvtool binvizual.ppm
+cargo run -- target/debug/bvtool
 ```
 
-We gave the binary itself as input, and the output is a ppm image named `binvizual.ppm`. You can open it with any image viewer to see the result.
+We gave the binary itself as input, and the output is a ppm image. You can open it with any image viewer to see the result.
 
 ## TODO
 
-- [ ] fix map scaling values to [0, 255]
+- [x] fix map scaling values to [0, 255]
 - [x] fix write ppm function
 - [ ] Tranfer draft doc to README
 - [ ] add tests
