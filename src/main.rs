@@ -6,7 +6,7 @@ use std::fs::File;
 use std::io::Read;
 
 const SIZE: usize = 256;
-type Matrix256x256u = SMatrix<u32, SIZE, SIZE>;
+type Map256 = SMatrix<u32, SIZE, SIZE>;
 
 fn load_file(file_path: &str) -> Vec<u8> {
     let mut file = File::open(file_path).expect("Can't open that file");
@@ -15,7 +15,7 @@ fn load_file(file_path: &str) -> Vec<u8> {
     slice
 }
 
-fn generate_visualization(slice: &Vec<u8>, map: &mut Matrix256x256u) {
+fn generate_visualization(slice: &Vec<u8>, map: &mut Map256) {
     // Read with a window of two the entire file
     for it in slice.windows(2) {
         map[(it[0] as usize, it[1] as usize)] += 1;
@@ -50,7 +50,7 @@ fn generate_visualization(slice: &Vec<u8>, map: &mut Matrix256x256u) {
     }
 }
 
-fn map_to_image(map: &Matrix256x256u) -> RgbImage {
+fn map_to_image(map: &Map256) -> RgbImage {
     let mut img: RgbImage = ImageBuffer::new(SIZE as u32, SIZE as u32);
     for i in 0..SIZE {
         for j in 0..SIZE {
@@ -66,7 +66,7 @@ fn main() {
     let slice = load_file(&file_path);
 
     // Create the 256x256 map
-    let mut map = Matrix256x256u::zeros();
+    let mut map = Map256::zeros();
 
     // Generate the visualization
     generate_visualization(&slice, &mut map);
@@ -90,7 +90,7 @@ fn _gen_exec_viz() {
 
             println!("[LOADING] {}", file_name);
             let slice = load_file(&file_path.to_str().unwrap());
-            let mut map = Matrix256x256u::zeros();
+            let mut map = Map256::zeros();
 
             println!("[GENERATING] generating 256x256 map");
             generate_visualization(&slice, &mut map);
