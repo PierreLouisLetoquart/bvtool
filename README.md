@@ -38,3 +38,11 @@ We gave the binary itself as input, and the output is a ppm image. You can open 
 
 - [Christopher Domas - The future of RE Dynamic Binary Visualization](https://www.youtube.com/watch?v=4bM3Gut1hIk)
 - [ppm P6 format](https://en.wikipedia.org/wiki/Netpbm)
+
+## Datasets used to generate representaions
+
+- [\[IMG\] Car](https://www.kaggle.com/datasets/prondeau/the-car-connection-picture-dataset)
+- [\[IMG\] Cat + Faces](https://www.kaggle.com/datasets/prasunroy/natural-images)
+- [\[IMG\] Bitmap](https://www.kaggle.com/datasets/tobiasbueck/bitmap-appple)
+- [\[AUDIO\] Speech emotions -> .wav](https://www.kaggle.com/datasets/dmitrybabko/speech-emotion-recognition-en)
+- \[EXEC\] All my executables in my $PATH dirs (ARM)
