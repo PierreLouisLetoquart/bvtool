@@ -40,7 +40,7 @@ We gave the binary itself as input, and the output is a ppm image. You can open 
 ## References
 
 - [Christopher Domas - The future of RE Dynamic Binary Visualization](https://www.youtube.com/watch?v=4bM3Gut1hIk)
-- [ppm P6 format](https://en.wikipedia.org/wiki/Netpbm)
+- [ppm P6 format](https://en.wikipedia.org/wiki/Netpbm) (for V0, now I'm using png format)
 - [Corte.si - entropy in raw bin files](https://corte.si/posts/visualisation/entropy/)
 
 ## Datasets used to generate representaions
