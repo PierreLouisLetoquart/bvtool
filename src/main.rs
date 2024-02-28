@@ -54,28 +54,54 @@ fn map_to_image(map: &Map256) -> RgbImage {
     let mut img: RgbImage = ImageBuffer::new(SIZE as u32, SIZE as u32);
     for i in 0..SIZE {
         for j in 0..SIZE {
-            img.put_pixel(i as u32, j as u32, image::Rgb([map[(i, j)] as u8, 0, 0]));
+            img.put_pixel(i as u32, j as u32, image::Rgb([0, map[(i, j)] as u8, 0]));
         }
     }
     img
 }
 
 fn main() {
-    // Open target file
-    let file_path = "./target/debug/bvtool";
-    let slice = load_file(&file_path);
+    // get the path of all the files in "path"
+    let mut limit = 0;
+    let paths = std::fs::read_dir("").unwrap();
+    for entry in paths {
+        let entry = entry.unwrap();
+        let file_path = entry.path();
+        let file_name = file_path.file_name().unwrap().to_str().unwrap();
 
-    // Create the 256x256 map
-    let mut map = Map256::zeros();
+        println!("[LOADING] {}", file_name);
+        let slice = load_file(&file_path.to_str().unwrap());
+        let mut map = Map256::zeros();
 
-    // Generate the visualization
-    generate_visualization(&slice, &mut map);
+        println!("[GENERATING] generating 256x256 map");
+        generate_visualization(&slice, &mut map);
+        let img: RgbImage = map_to_image(&map);
 
-    // Create the image
-    let img: RgbImage = map_to_image(&map);
+        let out_path = format!("data/img-jpg/{}.bvtool.png", file_name);
+        println!("[DONE] saving map into {}", &out_path);
+        img.save(out_path).unwrap();
+        limit += 1;
+        if limit == 8000 {
+            // finish program
+            break;
+        }
+    }
 
-    // Save the image
-    img.save("data/heatmap.png").unwrap();
+    // // Open target file
+    // let file_path = "./target/debug/bvtool";
+    // let slice = load_file(&file_path);
+
+    // // Create the 256x256 map
+    // let mut map = Map256::zeros();
+
+    // // Generate the visualization
+    // generate_visualization(&slice, &mut map);
+
+    // // Create the image
+    // let img: RgbImage = map_to_image(&map);
+
+    // // Save the image
+    // img.save("data/heatmap.png").unwrap();
 }
 
 fn _gen_exec_viz() {
