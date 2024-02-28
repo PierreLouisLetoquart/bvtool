@@ -1,91 +1,85 @@
-extern crate nalgebra as na;
+use bvtool::{generate_visualization, load_file, map_to_image, Map256};
+use clap::{Parser, ValueEnum};
+use image::RgbImage;
+use serde::Serialize;
 
-use image::{ImageBuffer, RgbImage};
-use na::SMatrix;
-use std::fs::File;
-use std::io::Read;
+// Possibilities
+//
+// generate a heatmap of the entire file
+// save the heatmap as a .png file (default to data/heatmap.png)
+// save the heatmap as a .png file in a custom path
+// specify the color of the heatmap (default to white)
+// generate a heatmap for all the files in a directory
 
-const SIZE: usize = 256;
-type Map256 = SMatrix<u32, SIZE, SIZE>;
-
-fn load_file(file_path: &str) -> Vec<u8> {
-    let mut file = File::open(file_path).expect("Can't open that file");
-    let mut slice = Vec::new();
-    file.read_to_end(&mut slice).unwrap();
-    slice
+#[derive(ValueEnum, Clone, Default, Debug, Serialize)]
+#[serde(rename_all = "kebab-case")]
+enum Colors {
+    #[default]
+    White,
+    Red,
+    Green,
+    Blue,
+    Yellow,
+    Cyan,
+    Magenta,
 }
 
-fn generate_visualization(slice: &Vec<u8>, map: &mut Map256) {
-    // Read with a window of two the entire file
-    for it in slice.windows(2) {
-        map[(it[0] as usize, it[1] as usize)] += 1;
-    }
+#[derive(Parser, Debug)]
+#[command(version, about, long_about = None)]
+struct Args {
+    #[arg(short, long)]
+    path: Option<std::path::PathBuf>,
 
-    // Find the max value
-    let mut max = 0.0;
+    #[arg(short, long, default_value = "data/heatmap.png")]
+    output: std::path::PathBuf,
 
-    for i in 0..SIZE {
-        for j in 0..SIZE {
-            let f: f32 = if map[(i, j)] > 0 {
-                (map[(i, j)] as f32).log10()
-            } else {
-                0.0
-            };
-            if f > max {
-                max = f;
-            }
-        }
-    }
+    #[arg(short, long)]
+    dir: Option<String>,
 
-    // Normalize the map
-    for i in 0..SIZE {
-        for j in 0..SIZE {
-            let f: f32 = if map[(i, j)] > 0 {
-                (map[(i, j)] as f32).log10()
-            } else {
-                0.0
-            };
-            map[(i, j)] = (f / max * 255.0) as u32;
-        }
-    }
-}
+    #[arg(short, long, default_value_t, value_enum)]
+    color: Colors,
 
-fn map_to_image(map: &Map256) -> RgbImage {
-    let mut img: RgbImage = ImageBuffer::new(SIZE as u32, SIZE as u32);
-    for i in 0..SIZE {
-        for j in 0..SIZE {
-            img.put_pixel(i as u32, j as u32, image::Rgb([0, map[(i, j)] as u8, 0]));
-        }
-    }
-    img
+    #[arg(short, long, default_value = "false")]
+    quiet: bool,
 }
 
 fn main() {
-    // get the path of all the files in "path"
-    let mut limit = 0;
-    let paths = std::fs::read_dir("").unwrap();
-    for entry in paths {
-        let entry = entry.unwrap();
-        let file_path = entry.path();
-        let file_name = file_path.file_name().unwrap().to_str().unwrap();
+    let args = Args::parse();
 
-        println!("[LOADING] {}", file_name);
-        let slice = load_file(&file_path.to_str().unwrap());
-        let mut map = Map256::zeros();
-
-        println!("[GENERATING] generating 256x256 map");
-        generate_visualization(&slice, &mut map);
-        let img: RgbImage = map_to_image(&map);
-
-        let out_path = format!("data/img-jpg/{}.bvtool.png", file_name);
-        println!("[DONE] saving map into {}", &out_path);
-        img.save(out_path).unwrap();
-        limit += 1;
-        if limit == 8000 {
-            // finish program
-            break;
-        }
+    if let Some(path) = args.path {
+        println!("Loading file: {:?}", path);
+    } else if let Some(dir) = args.dir {
+        println!("Loading directory: {:?}", dir);
+    } else {
+        eprintln!("No path or directory specified");
+        println!("run `bvtool --help` for more information");
+        std::process::exit(1);
     }
+
+    // get the path of all the files in "path"
+    // let mut limit = 0;
+    // let paths = std::fs::read_dir("").unwrap();
+    // for entry in paths {
+    //     let entry = entry.unwrap();
+    //     let file_path = entry.path();
+    //     let file_name = file_path.file_name().unwrap().to_str().unwrap();
+
+    //     println!("[LOADING] {}", file_name);
+    //     let slice = load_file(&file_path.to_str().unwrap());
+    //     let mut map = Map256::zeros();
+
+    //     println!("[GENERATING] generating 256x256 map");
+    //     generate_visualization(&slice, &mut map);
+    //     let img: RgbImage = map_to_image(&map);
+
+    //     let out_path = format!("data/img-jpg/{}.bvtool.png", file_name);
+    //     println!("[DONE] saving map into {}", &out_path);
+    //     img.save(out_path).unwrap();
+    //     limit += 1;
+    //     if limit == 8000 {
+    //         // finish program
+    //         break;
+    //     }
 
     // // Open target file
     // let file_path = "./target/debug/bvtool";
