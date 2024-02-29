@@ -1,49 +1,55 @@
 # Binary visualization
 
-> !!! This is a POC, I'm actually working on a more complete version of this project.
+Basic implementation of a binary file visualization algorithm. The idea is to generate a visual representation of a binary file, in order to have a quick overview of its content.
 
-This algo aim to take in input any file types, read its raw binary data and generate in output a simple ppm img in P6 format which represent the file.
+Link to the [Christopher Domas's video](https://www.youtube.com/watch?v=4bM3Gut1hIk)
 
-## Usage
+## How it works
 
-Test if you have cargo installed :
+> Here is the explanation of the `main.rs` file.
 
-```bash
-cargo --version
+We get the raw byte data from a file :
+
+```rust
+let slice = load_file(file_path);
 ```
 
-Clone the repo and cd to the project :
+Then calculate a map (of 256x256 pixels) using slice parcour with a window size of 2 bytes :
 
-```bash
-git clone git@github.com:PierreLouisLetoquart/bvtool.git
-cd bvtool
+```rust
+let mut map = Map256::zeros();
+
+generate_visualization(&slice, &mut map);
 ```
 
-Run the project, it needs a file path as argument (the input file) :
+Finally, we generate an RGB image from the map and save it :
 
-```bash
-cargo run -- target/debug/bvtool
+```rust
+let img: RgbImage = map_to_image(&map);
+
+img.save(&args.output).unwrap();
 ```
 
-We gave the binary itself as input, and the output is a ppm image. You can open it with any image viewer to see the result.
+**Output example** (using rust exec as input) :
 
-## TODO
+```bash
+# run locally from the root of the project
+cargo run -- -p ./target/debug/bvtool
+```
 
-- [x] fix map scaling values to [0, 255]
-- [x] fix write ppm function
-- [x] Tranfer draft doc to README
-- [x] Generate a dataset of binary files representations
-- [ ] add more file types support
-- [ ] publish the dataset (on kaggle ?)
-- [ ] add tests
+![rust exec visualization](./heatmap.png)
 
 ## References
 
 - [Christopher Domas - The future of RE Dynamic Binary Visualization](https://www.youtube.com/watch?v=4bM3Gut1hIk)
-- [ppm P6 format](https://en.wikipedia.org/wiki/Netpbm) (for V0, now I'm using png format)
-- [Corte.si - entropy in raw bin files](https://corte.si/posts/visualisation/entropy/)
+- [ppm P6 format](https://en.wikipedia.org/wiki/Netpbm) (for V0, now it's using png format)
+- [Corte.si - entropy in raw bin files](https://corte.si/posts/visualisation/entropy/) (for next steps)
 
-## Datasets used to generate representaions
+## Dataset
+
+> WIP
+
+Actually I'm working on creating a large and diverse dataset of binary files representations. It aims to be used for training a neural network to recognize the type of file from its visual representation or other applications.
 
 - [\[IMG\] Car](https://www.kaggle.com/datasets/prondeau/the-car-connection-picture-dataset)
 - [\[IMG\] Cat + Faces](https://www.kaggle.com/datasets/prasunroy/natural-images)
