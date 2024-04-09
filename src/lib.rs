@@ -58,7 +58,8 @@ pub fn map_to_image(map: &Map256) -> RgbImage {
             img.put_pixel(
                 i as u32,
                 j as u32,
-                image::Rgb([map[(i, j)] as u8, map[(i, j)] as u8, map[(i, j)] as u8]),
+                // image::Rgb([map[(i, j)] as u8, map[(i, j)] as u8, map[(i, j)] as u8]),
+                image::Rgb([0, map[(i, j)] as u8, 0]),
             );
         }
     }
