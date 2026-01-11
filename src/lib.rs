@@ -2,13 +2,22 @@ extern crate nalgebra as na;
 
 use image::{ImageBuffer, RgbImage};
 use na::SMatrix;
+
+#[cfg(not(target_arch = "wasm32"))]
 use std::fs::File;
+#[cfg(not(target_arch = "wasm32"))]
 use std::io::Read;
+
+#[cfg(target_arch = "wasm32")]
+use image::{codecs::png::PngEncoder, ColorType, ImageEncoder};
+#[cfg(target_arch = "wasm32")]
+use wasm_bindgen::prelude::*;
 
 const SIZE: usize = 256;
 
 pub type Map256 = SMatrix<u32, SIZE, SIZE>;
 
+#[cfg(not(target_arch = "wasm32"))]
 pub fn load_file(file_path: &std::path::PathBuf) -> Vec<u8> {
     let mut file = File::open(file_path).expect("Can't open that file");
     let mut slice = Vec::new();
@@ -16,7 +25,7 @@ pub fn load_file(file_path: &std::path::PathBuf) -> Vec<u8> {
     slice
 }
 
-pub fn generate_visualization(slice: &Vec<u8>, map: &mut Map256) {
+pub fn generate_visualization(slice: &[u8], map: &mut Map256) {
     // Read with a window of two the entire file
     for it in slice.windows(2) {
         map[(it[0] as usize, it[1] as usize)] += 1;
@@ -64,4 +73,19 @@ pub fn map_to_image(map: &Map256) -> RgbImage {
         }
     }
     img
+}
+
+#[cfg(target_arch = "wasm32")]
+#[wasm_bindgen]
+pub fn visualize_png(bytes: &[u8]) -> Vec<u8> {
+    let mut map = Map256::zeros();
+    generate_visualization(bytes, &mut map);
+    let img: RgbImage = map_to_image(&map);
+
+    let mut out = Vec::new();
+    let encoder = PngEncoder::new(&mut out);
+    encoder
+        .encode(img.as_raw(), SIZE as u32, SIZE as u32, ColorType::Rgb8)
+        .unwrap();
+    out
 }
