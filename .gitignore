@@ -2,5 +2,6 @@
 /data
 /inputs
 /outputs
+/pkg
 
 .DS_Store
