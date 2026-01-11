@@ -1,8 +1,17 @@
 # Binary visualization
 
+> [!IMPORTANT]
+> Checkout the [full article](https://letoquart.com/blog/binviz) if you want **a demo** and more about the algorithm.
+
 Basic implementation of a binary file visualization algorithm. The idea is to generate a visual representation of a binary file, in order to have a quick overview of its content.
 
 Link to the [Christopher Domas's video](https://www.youtube.com/watch?v=4bM3Gut1hIk)
+
+## Compile for wasm
+
+```bash
+wasm-pack build --target web --out-dir pkg
+```
 
 ## How it works
 
